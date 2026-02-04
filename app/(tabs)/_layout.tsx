@@ -1,7 +1,12 @@
-import { Stack } from "expo-router";
+import { Tabs } from "expo-router";
 
 export default function TabLayout() {
-  const isAuthenticated = false;
-
-  return <Stack screenOptions={{ headerShown: false }} />;
+  return (
+    <Tabs>
+      <Tabs.Screen name="main" />
+      <Tabs.Screen name="profile" />
+      <Tabs.Screen name="community" />
+      <Tabs.Screen name="settings" />
+    </Tabs>
+  );
 }

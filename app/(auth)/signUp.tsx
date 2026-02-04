@@ -1,4 +1,5 @@
 import backgroundImage from "@/assets/images/homeImage.png";
+import { supabase } from "@/utils/supabase";
 import { BlurView } from "expo-blur";
 import { Image } from "expo-image";
 import { router } from "expo-router";
@@ -20,13 +21,64 @@ const SignUp = () => {
     username: "",
     email: "",
     password: "",
-    confirmPassword: "",
   });
 
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleCreateAccount = () => {};
+  const handleCreateAccount = async () => {
+    if (!form.username.trim() || !form.email.trim() || !form.password.trim()) {
+      alert("Please fill in all fields");
+      return;
+    }
+
+    if (form.username.trim().length < 3) {
+      alert("Username must be at least 3 characters");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // Sign up the user
+      const result = await supabase.auth.signUp({
+        email: form.email.trim(),
+        password: form.password,
+        options: {
+          data: {
+            username: form.username.trim(),
+          },
+        },
+      });
+
+      // result.data may contain { user, session } depending on settings
+      const user = result.data?.user ?? null;
+      const session = result.data?.session ?? null;
+      const signUpError = result.error ?? null;
+
+      if (signUpError) {
+        alert(signUpError.message);
+        setLoading(false);
+        return;
+      }
+
+      if (!user) {
+        // Most common case when email confirmation is required: user is created but not logged in
+        alert(
+          "Account created. Please confirm your email before signing in. Your profile will be created after you sign in.",
+        );
+        setLoading(false);
+        return;
+      }
+
+      setForm({ username: "", email: "", password: "" });
+      setLoading(false);
+      router.replace("/(tabs)");
+    } catch (error) {
+      console.error(error);
+      alert("An unexpected error occurred. Please try again.");
+      setLoading(false);
+    }
+  };
 
   const handleSignIn = () => {
     router.replace("/(auth)/signIn");
@@ -88,7 +140,15 @@ const SignUp = () => {
                   <Text className="text-[12px] font-bold  uppercase tracking-wider text-[#2c2c2c]/60 mb-2 ml-2">
                     Email:
                   </Text>
-                  <TextInput className="w-full bg-white/60 border border-[#2c2c2c]/10 rounded-xl px-4 py-3.5 text-[#2c2c2c] outline-none" />
+                  <TextInput
+                    placeholder="Enter your email"
+                    value={form.email}
+                    onChangeText={(value) => setForm({ ...form, email: value })}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    className="w-full bg-white/60 border border-[#2c2c2c]/10 rounded-xl px-4 py-3.5 text-[#2c2c2c] outline-none"
+                  />
                 </View>
                 <View className="space-y-1 mt-5">
                   <Text className="text-[12px] font-bold uppercase tracking-wider text-[#2c2c2c]/60 ml-1">
@@ -122,9 +182,13 @@ const SignUp = () => {
                 </View>
               </View>
               <View className="w-full mb-6">
-                <TouchableOpacity className="w-full bg-[#1f1f1f] py-4 px-3 rounded-2xl tracking-wide">
+                <TouchableOpacity
+                  className="w-full bg-[#1f1f1f] py-4 px-3 rounded-2xl tracking-wide"
+                  onPress={handleCreateAccount}
+                  disabled={loading}
+                >
                   <Text className="text-white font-bold text-[16px] text-center">
-                    Create Account
+                    {loading ? "Creating Account..." : "Create Account"}
                   </Text>
                 </TouchableOpacity>
               </View>

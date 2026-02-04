@@ -87,16 +87,17 @@ const Home = () => {
             </View>
           </View>
           <View className="w-full px-1 mb-4">
-            <TouchableOpacity
-              activeOpacity={0.9}
-              onPress={() => router.push("/signIn")}
-              className="w-full rounded-2xl overflow-hidden"
-            >
-              <Text className="text-[#2c2c2c]/60 font-bold text-[13px] hover:text-[#2c2c2c] text-center">
-                Already have an account?{" "}
-                <Text className="text-[#2d6a6a] font-extrabold">Sign in</Text>
-              </Text>
-            </TouchableOpacity>
+            <Text className="text-[#2c2c2c]/60 font-bold text-[13px] hover:text-[#2c2c2c] text-center">
+              Already have an account?{" "}
+              <TouchableOpacity
+                activeOpacity={0.9}
+                onPress={() => router.push("/(auth)/signIn")}
+              >
+                <Text className="text-[#2d6a6a] font-extrabold ml-1">
+                  Sign in
+                </Text>
+              </TouchableOpacity>
+            </Text>
           </View>
         </BlurView>
       </View>
