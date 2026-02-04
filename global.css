@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .glass-card {
+    @apply bg-cream/85 border border-white/30;
+  }
+
+  .premium-gradient {
+    @apply bg-[#2c2c2c];
+  }
+}
